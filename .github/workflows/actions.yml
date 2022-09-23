@@ -24,7 +24,7 @@ jobs:
     - run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
     - run: docker tag express-app:${GITHUB_SHA::6} ${{ secrets.DOCKER_USER }}/express-api:${GITHUB_SHA::6}
     - run: docker push ${{ secrets.DOCKER_USER }}/express-api:${GITHUB_SHA::6}
-    if: ${{ github.ref_name == 'main' }}
+    if: github.ref_name == 'main'
     run: |
       docker tag express-app:${GITHUB_SHA::6} ${{ secrets.DOCKER_USER }}/express-api:latest
       docker push ${{ secrets.DOCKER_USER }}/express-api:latest
