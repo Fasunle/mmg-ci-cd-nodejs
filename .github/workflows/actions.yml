@@ -19,6 +19,6 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
     - run: docker --version
-    - run: docker build -t express-app:${GITHUB_SHA::4} .
-    - run: docker login -u ${{ secrets.DOCKER_USER }} -p {{ secrets.DOCKER_TOKEN }}
+    - run: docker build -t express-app:${GITHUB_SHA::6} .
+    - run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
     - run: docker push
