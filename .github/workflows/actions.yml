@@ -1,0 +1,38 @@
+name: Deploy Nodejs Application to production
+
+on:
+  push: 
+    branches: [develop, main]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  build:
+    name: build artifact
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+    - name: Check Docker version
+      run: docker --version
+    - name: Upgrade npm package manager
+      run: npm upgrade
+    - name: Build a docker image
+      run: docker build -t express-app:${GITHUB_SHA::6} .
+    - name: Login into the remote registry
+      run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
+    - name: Tag build image
+      run: docker tag express-app:${GITHUB_SHA::6} ${{ secrets.DOCKER_USER }}/express-api:${GITHUB_SHA::6}
+    - name: Push to the docker registry
+      if: github.ref_name != 'main'
+      run: docker push ${{ secrets.DOCKER_USER }}/express-api:${GITHUB_SHA::6}
+    - name: Create a latest image and deploy
+      if: github.ref_name == 'main'
+      run: |
+        docker tag express-app:${GITHUB_SHA::6} ${{ secrets.DOCKER_USER }}/express-api:latest
+        docker push ${{ secrets.DOCKER_USER }}/express-api:latest
