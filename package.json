@@ -5,8 +5,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -w",
-    "dev": "conc \"yarn build\" \"nodemon ./dist/server.js\"",
+    "build": "tsc",
+    "compile": "tsc -w",
+    "dev": "conc \"npm run compile\" \"nodemon ./dist/server.js\"",
     "start": "node ./dist/server.js"
   },
   "devDependencies": {
