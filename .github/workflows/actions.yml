@@ -18,12 +18,18 @@ jobs:
         node-version: 16
         cache: 'npm'
         cache-dependency-path: package-lock.json
-    - run: docker --version
-    - run: npm upgrade
-    - run: docker build -t express-app:${GITHUB_SHA::6} .
-    - run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
-    - run: docker tag express-app:${GITHUB_SHA::6} ${{ secrets.DOCKER_USER }}/express-api:${GITHUB_SHA::6}
-    - run: docker push ${{ secrets.DOCKER_USER }}/express-api:${GITHUB_SHA::6}
+    - name: Check Docker version
+      run: docker --version
+    - name: Upgrade npm package manager
+      run: npm upgrade
+    - name: Build a docker image
+      run: docker build -t express-app:${GITHUB_SHA::6} .
+    - name: Login into the remote registry
+      run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
+    - name: Tag build image
+      run: docker tag express-app:${GITHUB_SHA::6} ${{ secrets.DOCKER_USER }}/express-api:${GITHUB_SHA::6}
+    - name: Push to the docker registry
+      run: docker push ${{ secrets.DOCKER_USER }}/express-api:${GITHUB_SHA::6}
     - name: Create a latest image and deploy
       if: github.ref_name == 'main'
       run: |
